@@ -33,6 +33,11 @@ hook.Add("TTTPlayerSpeed", "TTTSprint4TTTPlayerSpeed" , function(ply)
 	return ply.mult
 end)
 -- return Speed
-hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeedModifier" , function(ply)
-	return ply.mult
+hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeedModifier" , function(ply, slowed, mv)
+	if mv then -- mv is just supported by TTT2
+		mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * ply.mult)
+		mv:SetMaxSpeed(mv:GetMaxSpeed() * ply.mult)
+	else
+		return ply.mult
+	end
 end)
