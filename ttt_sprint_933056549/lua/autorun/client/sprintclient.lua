@@ -1,6 +1,6 @@
 -- Please ask me if you want to use parts of this code!
 -- FG Addon Heading
-local Version = "3.1"
+local Version = "3.2"
 -- Table with Addons
 if not TTTFGAddons then
 	TTTFGAddons = {}
@@ -46,6 +46,9 @@ local TimerCon = CurTime()
 local TimerReg = CurTime()
 local surface = surface
 local ply = LocalPlayer()
+if not TTT2 then
+	TTT2 = false
+end
 -- Receive ConVars (SERVER)
 net.Receive("SprintGetConVars", function()
 	local Table = net.ReadTable()
@@ -98,33 +101,37 @@ local function HUD(name,xPos,yPos,allignment,ColorA,ColorB,value,maximum)
 			y = ScrH()-yPos
 		end
 		-- Drawing
-		draw.RoundedBox(8, x-5, y-10, 250, 60, Color(0, 0, 0, 200))
-		draw.RoundedBox(8, x+4, y+4, 232, 27, ColorB)
+		local length = 230
+		if TTT2 then
+			length = 250 + GetConVar( "ttt2_base_hud_width" ):GetFloat()
+		end
+		draw.RoundedBox(8, x-5, y-10, length+20, 60, Color(0, 0, 0, 200))
+		draw.RoundedBox(8, x+4, y+4, length+2, 27, ColorB)
 		surface.SetDrawColor(ColorA)
-		if 230/maximum*valueNumber > 0 then
-			surface.DrawRect( x+12, y+5, 230/maximum*valueNumber-14, 25 )
+		if length/maximum*valueNumber > 0 then
+			surface.DrawRect( x+12, y+5, length/maximum*valueNumber-14, 25 )
 			surface.DrawRect( x+5, y+13, 8, 25-8*2 )
 			surface.SetTexture( surface.GetTextureID( "gui/corner8" ) )
 			surface.DrawTexturedRectRotated( x+5 + 8/2 , y+5 + 8/2, 8, 8, 0 )
 			surface.DrawTexturedRectRotated( x+5 + 8/2 , y+5 + 25 -8/2, 8, 8, 90 )
 			
-			if 230/maximum*valueNumber > 13 then
-				surface.DrawRect( x+5+230/maximum*valueNumber-8, y+13, 8, 25-8*2 )
-				surface.DrawTexturedRectRotated( x+5 + 230/maximum*valueNumber - 8/2 , y+5 + 8/2, 8, 8, 270 )
-				surface.DrawTexturedRectRotated( x+5 + 230/maximum*valueNumber - 8/2 , y+5 + 25 - 8/2, 8, 8, 180 )
+			if length/maximum*valueNumber > 13 then
+				surface.DrawRect( x+5+length/maximum*valueNumber-8, y+13, 8, 25-8*2 )
+				surface.DrawTexturedRectRotated( x+5 + length/maximum*valueNumber - 8/2 , y+5 + 8/2, 8, 8, 270 )
+				surface.DrawTexturedRectRotated( x+5 + length/maximum*valueNumber - 8/2 , y+5 + 25 - 8/2, 8, 8, 180 )
 			else
-				surface.DrawRect( x+5 + math.max(230/maximum*valueNumber-8, 8), y+5, 8/2, 25 )
+				surface.DrawRect( x+5 + math.max(length/maximum*valueNumber-8, 8), y+5, 8/2, 25 )
 			end
 		end
 		-- Texts with shaddow
 		if number then
-			draw.SimpleText(math.floor(value), "HUDFont", x+215, y+7, Color(0, 0, 0),TEXT_ALIGN_RIGHT)
-			draw.SimpleText(math.floor(value), "HUDFont", x+213, y+5, Color(255, 255, 255),TEXT_ALIGN_RIGHT)
+			draw.SimpleText(math.floor(value), "HUDFont", x+length-15, y+7, Color(0, 0, 0),TEXT_ALIGN_RIGHT)
+			draw.SimpleText(math.floor(value), "HUDFont", x+length-17, y+5, Color(255, 255, 255),TEXT_ALIGN_RIGHT)
 		else
-			draw.SimpleText(value, "HUDFont", x+215, y+7, Color(0, 0, 0),TEXT_ALIGN_RIGHT)
-			draw.SimpleText(value, "HUDFont", x+213, y+5, Color(255, 255, 255),TEXT_ALIGN_RIGHT)
+			draw.SimpleText(value, "HUDFont", x+length-15, y+7, Color(0, 0, 0),TEXT_ALIGN_RIGHT)
+			draw.SimpleText(value, "HUDFont", x+length-17, y+5, Color(255, 255, 255),TEXT_ALIGN_RIGHT)
 		end
-		draw.SimpleText(name, "TabLarge", x+184, y-17, Color(255, 255, 255))
+		draw.SimpleText(name, "TabLarge", x+length-46, y-17, Color(255, 255, 255))
 	end
 end
 -- Painting of the HUD
@@ -226,14 +233,14 @@ end)
 -- Presets
 local function DefaultI()
 	RunConsoleCommand( "ttt_sprint_hud_allignment", "0")
-	RunConsoleCommand( "ttt_sprint_hud_offset_x", tostring(ScrW()/2-125) )
-	RunConsoleCommand( "ttt_sprint_hud_offset_y", "60" )
+	RunConsoleCommand( "ttt_sprint_hud_offset_x", "15" )
+	RunConsoleCommand( "ttt_sprint_hud_offset_y", "180" )
 	Key_box2:SetValue("Bottom, left")
 end
 local function DefaultII()
 	RunConsoleCommand( "ttt_sprint_hud_allignment", "0")
-	RunConsoleCommand( "ttt_sprint_hud_offset_x", "15" )
-	RunConsoleCommand( "ttt_sprint_hud_offset_y", "180" )
+	RunConsoleCommand( "ttt_sprint_hud_offset_x", tostring(ScrW()/2-125) )
+	RunConsoleCommand( "ttt_sprint_hud_offset_y", "60" )
 	Key_box2:SetValue("Bottom, left")
 end
 local function DefaultIII()
@@ -257,6 +264,36 @@ end
 local function DefaultVI()
 	RunConsoleCommand( "ttt_sprint_hud_allignment", "0")
 	RunConsoleCommand( "ttt_sprint_hud_offset_x", "275" )
+	RunConsoleCommand( "ttt_sprint_hud_offset_y", "180" )
+	Key_box2:SetValue("Bottom, left")
+end
+local function DefaultIIa()
+	RunConsoleCommand( "ttt_sprint_hud_allignment", "0")
+	RunConsoleCommand( "ttt_sprint_hud_offset_x", tostring(ScrW()/2-(250+GetConVar( "ttt2_base_hud_width" ):GetFloat())/2 ))
+	RunConsoleCommand( "ttt_sprint_hud_offset_y", "60" )
+	Key_box2:SetValue("Bottom, left")
+end
+local function DefaultIIIa()
+	RunConsoleCommand( "ttt_sprint_hud_allignment", "3")
+	RunConsoleCommand( "ttt_sprint_hud_offset_x", tostring(275 + GetConVar( "ttt2_base_hud_width" ):GetFloat()) )
+	RunConsoleCommand( "ttt_sprint_hud_offset_y", "60" )
+	Key_box2:SetValue("Bottom, right")
+end
+local function DefaultIVa()
+	RunConsoleCommand( "ttt_sprint_hud_allignment", "0")
+	RunConsoleCommand( "ttt_sprint_hud_offset_x", tostring(300 + GetConVar( "ttt2_base_hud_width" ):GetFloat()) )
+	RunConsoleCommand( "ttt_sprint_hud_offset_y", "60" )
+	Key_box2:SetValue("Bottom, left")
+end
+local function DefaultVa()
+	RunConsoleCommand( "ttt_sprint_hud_allignment", "0")
+	RunConsoleCommand( "ttt_sprint_hud_offset_x", tostring(300 + GetConVar( "ttt2_base_hud_width" ):GetFloat()) )
+	RunConsoleCommand( "ttt_sprint_hud_offset_y", "120" )
+	Key_box2:SetValue("Bottom, left")
+end
+local function DefaultVIa()
+	RunConsoleCommand( "ttt_sprint_hud_allignment", "0")
+	RunConsoleCommand( "ttt_sprint_hud_offset_x", 300 + GetConVar( "ttt2_base_hud_width" ):GetFloat() )
 	RunConsoleCommand( "ttt_sprint_hud_offset_y", "180" )
 	Key_box2:SetValue("Bottom, left")
 end
@@ -395,41 +432,77 @@ hook.Add("TTTSettingsTabs", "TTTSprint4TTTSettingsTabs", function(dtabs)
 	end
 	settings_sprint_tab:NumSlider("X Offset", "ttt_sprint_hud_offset_x", 0, ScrW(), 0)
 	settings_sprint_tab:NumSlider("Y Offset", "ttt_sprint_hud_offset_y", 0, ScrH(), 0)
-	
-	local Settings_text = vgui.Create("DLabel", General_Settings)
-	Settings_text:SetText("Presets:")
-	Settings_text:SetColor(Color(0,0,0))
-	settings_sprint_tab:AddItem( Settings_text )
-	
-	local DefaultI_button = vgui.Create("DButton")
-	DefaultI_button:SetText("Lower middle")
-	DefaultI_button.DoClick = DefaultI
-	settings_sprint_tab:AddItem( DefaultI_button )
-	
-	local DefaultII_button = vgui.Create("DButton")
-	DefaultII_button:SetText("On top of role")
-	DefaultII_button.DoClick = DefaultII
-	settings_sprint_tab:AddItem( DefaultII_button )
-	
-	local DefaultIII_button = vgui.Create("DButton")
-	DefaultIII_button:SetText("Lower right corner")
-	DefaultIII_button.DoClick = DefaultIII
-	settings_sprint_tab:AddItem( DefaultIII_button )
-	
-	local DefaultIV_button = vgui.Create("DButton")
-	DefaultIV_button:SetText("Next to role")
-	DefaultIV_button.DoClick = DefaultIV
-	settings_sprint_tab:AddItem( DefaultIV_button )
-	
-	local DefaultV_button = vgui.Create("DButton")
-	DefaultV_button:SetText("Next to role 2")
-	DefaultV_button.DoClick = DefaultV
-	settings_sprint_tab:AddItem( DefaultV_button )
-	
-	local DefaultVI_button = vgui.Create("DButton")
-	DefaultVI_button:SetText("Next to role 3")
-	DefaultVI_button.DoClick = DefaultVI
-	settings_sprint_tab:AddItem( DefaultVI_button )
+	if not TTT2 then
+		local Settings_text = vgui.Create("DLabel", General_Settings)
+		Settings_text:SetText("Presets:")
+		Settings_text:SetColor(Color(0,0,0))
+		settings_sprint_tab:AddItem( Settings_text )
+		
+		local DefaultI_button = vgui.Create("DButton")
+		DefaultI_button:SetText("On top of role")
+		DefaultI_button.DoClick = DefaultI
+		settings_sprint_tab:AddItem( DefaultI_button )
+		
+		local DefaultII_button = vgui.Create("DButton")
+		DefaultII_button:SetText("Lower middle")
+		DefaultII_button.DoClick = DefaultII
+		settings_sprint_tab:AddItem( DefaultII_button )
+		
+		local DefaultIII_button = vgui.Create("DButton")
+		DefaultIII_button:SetText("Lower right corner")
+		DefaultIII_button.DoClick = DefaultIII
+		settings_sprint_tab:AddItem( DefaultIII_button )
+		
+		local DefaultIV_button = vgui.Create("DButton")
+		DefaultIV_button:SetText("Next to role")
+		DefaultIV_button.DoClick = DefaultIV
+		settings_sprint_tab:AddItem( DefaultIV_button )
+		
+		local DefaultV_button = vgui.Create("DButton")
+		DefaultV_button:SetText("Next to role 2")
+		DefaultV_button.DoClick = DefaultV
+		settings_sprint_tab:AddItem( DefaultV_button )
+		
+		local DefaultVI_button = vgui.Create("DButton")
+		DefaultVI_button:SetText("Next to role 3")
+		DefaultVI_button.DoClick = DefaultVI
+		settings_sprint_tab:AddItem( DefaultVI_button )
+	else
+		local Settings_text = vgui.Create("DLabel", General_Settings)
+		Settings_text:SetText("Presets (TTT2 Compatible):")
+		Settings_text:SetColor(Color(0,0,0))
+		settings_sprint_tab:AddItem( Settings_text )
+		
+		local DefaultI_button = vgui.Create("DButton")
+		DefaultI_button:SetText("On top of role")
+		DefaultI_button.DoClick = DefaultI
+		settings_sprint_tab:AddItem( DefaultI_button )
+		
+		local DefaultII_button = vgui.Create("DButton")
+		DefaultII_button:SetText("Lower middle")
+		DefaultII_button.DoClick = DefaultIIa
+		settings_sprint_tab:AddItem( DefaultII_button )
+		
+		local DefaultIII_button = vgui.Create("DButton")
+		DefaultIII_button:SetText("Lower right corner")
+		DefaultIII_button.DoClick = DefaultIIIa
+		settings_sprint_tab:AddItem( DefaultIII_button )
+		
+		local DefaultIV_button = vgui.Create("DButton")
+		DefaultIV_button:SetText("Next to role")
+		DefaultIV_button.DoClick = DefaultIVa
+		settings_sprint_tab:AddItem( DefaultIV_button )
+		
+		local DefaultV_button = vgui.Create("DButton")
+		DefaultV_button:SetText("Next to role 2")
+		DefaultV_button.DoClick = DefaultVa
+		settings_sprint_tab:AddItem( DefaultV_button )
+		
+		local DefaultVI_button = vgui.Create("DButton")
+		DefaultVI_button:SetText("Next to role 3")
+		DefaultVI_button.DoClick = DefaultVIa
+		settings_sprint_tab:AddItem( DefaultVI_button )
+	end
 	
 	settings_sprint_tab:SizeToContents()
 	local Version_text = vgui.Create("DLabel", General_Settings)
@@ -439,6 +512,11 @@ hook.Add("TTTSettingsTabs", "TTTSprint4TTTSettingsTabs", function(dtabs)
 end)
 
 -- Set Sprint Speed
-hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed" , function(ply)
-	return ply.mult
+hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed" , function(ply, slowed, mv)
+	if mv.GetMaxSpeed then -- mv is just supported by TTT2
+		mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * (ply.mult or 1))
+		mv:SetMaxSpeed(mv:GetMaxSpeed() * (ply.mult or 1))
+	else
+		return ply.mult
+	end
 end)

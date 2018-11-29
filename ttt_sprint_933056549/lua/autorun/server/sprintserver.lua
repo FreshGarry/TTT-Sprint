@@ -28,11 +28,16 @@ net.Receive("SprintGetConVars", function( len, ply)
 	net.WriteTable(Table)
 	net.Send(ply)
 end)
--- return Speed
-hook.Add("TTTPlayerSpeed", "TTTSprint4TTTPlayerSpeed" , function(ply)
+-- return Speed for old TTT Servers
+hook.Add("TTTPlayerSpeed", "TTTSprint4TTTPlayerSpeed" , function(ply, slowed, mv)
 	return ply.mult
 end)
 -- return Speed
-hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeedModifier" , function(ply)
-	return ply.mult
+hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed" , function(ply, slowed, mv)
+	if mv.GetMaxSpeed then -- mv is just supported by TTT2
+		mv:SetMaxClientSpeed(mv:GetMaxClientSpeed() * (ply.mult or 1))
+		mv:SetMaxSpeed(mv:GetMaxSpeed() * (ply.mult or 1))
+	else
+		return ply.mult
+	end
 end)
