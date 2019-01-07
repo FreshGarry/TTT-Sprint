@@ -36,7 +36,7 @@ end)
 -- return Speed
 hook.Add("TTTPlayerSpeedModifier", "TTTSprint4TTTPlayerSpeed", function(ply, _, _, noLag)
 	if noLag then -- noLag is just supported by TTT2
-		noLag[1] = noLag[1] * (pl.mult or 1)
+		noLag[1] = noLag[1] * (ply.mult or 1)
 	else
 		return ply.mult
 	end
