@@ -102,7 +102,7 @@ local function HUD(name,xPos,yPos,allignment,ColorA,ColorB,value,maximum)
 		end
 		-- Drawing
 		local length = 230
-		if TTT2 then
+		if TTT2 and GetConVar( "ttt2_base_hud_width" ) then
 			length = 250 + GetConVar( "ttt2_base_hud_width" ):GetFloat()
 		end
 		draw.RoundedBox(8, x-5, y-10, length+20, 60, Color(0, 0, 0, 200))
@@ -216,6 +216,7 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 			if sprinting then -- not sprinting
 				SpeedChange(false)
 				sprinting = false
+				DoubleTapActivated = false
 				TimerReg = CurTime()
 			end
 			realProzent = realProzent+(CurTime()-TimerReg)*(math.min(math.max(Regenerate, 0.01),2 )*250)
@@ -224,6 +225,10 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 		end
 		if realProzent < 0 then -- prevent bugs
 			realProzent = 0
+			SpeedChange(false)
+			sprinting = false
+			DoubleTapActivated = false
+			TimerReg = CurTime()
 		elseif realProzent > 100 then
 			realProzent = 100
 		end
