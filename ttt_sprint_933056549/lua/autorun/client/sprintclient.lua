@@ -7,6 +7,8 @@ if not TTTFGAddons then
 	TTTFGAddons = {}
 end
 
+TTTFGAddons.realProzent = 100
+
 table.insert(TTTFGAddons, "TTT Sprint")
 
 -- ConVar for disabling
@@ -45,7 +47,6 @@ local Consumption = 1
 local KeySelected = ""
 local KeySelected2 = ""
 local Key_box2 = 0
-local realProzent = 100
 local sprinting = false
 local lastReleased = -1000
 local DoubleTapActivated = false
@@ -168,7 +169,7 @@ hook.Add("HUDPaint", "SprintHUD", function()
 		return
 	end -- not ttt
 
-	HUD("STAMINA", xPos, yPos, allignment, Color(0, 0, 255, 255), Color(0, 0, 100, 255), realProzent, 100)
+	HUD("STAMINA", xPos, yPos, allignment, Color(0, 0, 255, 255), Color(0, 0, 100, 255), TTTFGAddons.realProzent, 100)
 end)
 
 -- Change the Speed
@@ -221,7 +222,7 @@ end
 
 -- Sprint activated (sprint if there is stamina)
 local function SprintFunction()
-	if realProzent > 0 then
+	if TTTFGAddons.realProzent > 0 then
 		if not sprinting then
 			SpeedChange(true)
 
@@ -229,7 +230,7 @@ local function SprintFunction()
 			TimerCon = CurTime()
 		end
 
-		realProzent = realProzent - (CurTime() - TimerCon) * (math.min(math.max(Consumption, 0.1), 5) * 250)
+		TTTFGAddons.realProzent = TTTFGAddons.realProzent - (CurTime() - TimerCon) * (math.min(math.max(Consumption, 0.1), 5) * 250)
 		TimerCon = CurTime()
 	else
 		if sprinting then
@@ -243,7 +244,7 @@ end
 -- listen for sprinting
 hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 	-- reset every round
-	realProzent = 100
+	TTTFGAddons.realProzent = 100
 
 	ConVars()
 
@@ -271,19 +272,19 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 				TimerReg = CurTime()
 			end
 
-			realProzent = realProzent + (CurTime() - TimerReg) * (math.min(math.max(Regenerate, 0.01), 2) * 250)
+			TTTFGAddons.realProzent = TTTFGAddons.realProzent + (CurTime() - TimerReg) * (math.min(math.max(Regenerate, 0.01), 2) * 250)
 			TimerReg = CurTime()
 			DoubleTapActivated = false
 		end
 
-		if realProzent < 0 then -- prevent bugs
-			realProzent = 0
+		if TTTFGAddons.realProzent < 0 then -- prevent bugs
+			TTTFGAddons.realProzent = 0
 			SpeedChange(false)
 			sprinting = false
 			DoubleTapActivated = false
 			TimerReg = CurTime()
-		elseif realProzent > 100 then
-			realProzent = 100
+		elseif TTTFGAddons.realProzent > 100 then
+			TTTFGAddons.realProzent = 100
 		end
 	end)
 end)
