@@ -1,13 +1,16 @@
 -- Please ask me if you want to use parts of this code!
 -- FG Addon Heading
-local Version = "3.3"
+local Version = "3.4"
 
 -- Table with Addons
 if not TTTFGAddons then
 	TTTFGAddons = {}
 end
 
-TTTFGAddons.realProzent = 100
+-- global accessable variables
+TTTSprint = {}
+TTTSprint.percent = 100
+TTTSprint.sprinting = false
 
 table.insert(TTTFGAddons, "TTT Sprint")
 
@@ -17,12 +20,13 @@ local ChatMessage = CreateClientConVar("ttt_fgaddons_textmessage", "1", true, fa
 -- Hook for printing
 hook.Add("TTTBeginRound", "TTTBeginRound4TTTFGAddons", function()
 	local String = ""
+	local names = TTTFGAddons
 
-	for i = 1, #TTTFGAddons do
+	for i = 1, #names do
 		if String == "" then
-			String = TTTFGAddons[i]
+			String = names[i]
 		else
-			String = String..", "..TTTFGAddons[i]
+			String = String..", "..names[i]
 		end
 	end
 
@@ -47,7 +51,8 @@ local Consumption = 1
 local KeySelected = ""
 local KeySelected2 = ""
 local Key_box2 = 0
-local sprinting = false
+local percent = TTTSprint.percent
+local sprinting = TTTSprint.sprinting
 local lastReleased = -1000
 local DoubleTapActivated = false
 local CrosshairSize = 1
@@ -169,7 +174,7 @@ hook.Add("HUDPaint", "SprintHUD", function()
 		return
 	end -- not ttt
 
-	HUD("STAMINA", xPos, yPos, allignment, Color(0, 0, 255, 255), Color(0, 0, 100, 255), TTTFGAddons.realProzent, 100)
+	HUD("STAMINA", xPos, yPos, allignment, Color(0, 0, 255, 255), Color(0, 0, 100, 255), percent, 100)
 end)
 
 -- Change the Speed
@@ -222,7 +227,7 @@ end
 
 -- Sprint activated (sprint if there is stamina)
 local function SprintFunction()
-	if TTTFGAddons.realProzent > 0 then
+	if percent > 0 then
 		if not sprinting then
 			SpeedChange(true)
 
@@ -230,7 +235,7 @@ local function SprintFunction()
 			TimerCon = CurTime()
 		end
 
-		TTTFGAddons.realProzent = TTTFGAddons.realProzent - (CurTime() - TimerCon) * (math.min(math.max(Consumption, 0.1), 5) * 250)
+		percent = percent - (CurTime() - TimerCon) * (math.min(math.max(Consumption, 0.1), 5) * 250)
 		TimerCon = CurTime()
 	else
 		if sprinting then
@@ -244,7 +249,7 @@ end
 -- listen for sprinting
 hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 	-- reset every round
-	TTTFGAddons.realProzent = 100
+	percent = 100
 
 	ConVars()
 
@@ -272,19 +277,19 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 				TimerReg = CurTime()
 			end
 
-			TTTFGAddons.realProzent = TTTFGAddons.realProzent + (CurTime() - TimerReg) * (math.min(math.max(Regenerate, 0.01), 2) * 250)
+			percent = percent + (CurTime() - TimerReg) * (math.min(math.max(Regenerate, 0.01), 2) * 250)
 			TimerReg = CurTime()
 			DoubleTapActivated = false
 		end
 
-		if TTTFGAddons.realProzent < 0 then -- prevent bugs
-			TTTFGAddons.realProzent = 0
+		if percent < 0 then -- prevent bugs
+			percent = 0
 			SpeedChange(false)
 			sprinting = false
 			DoubleTapActivated = false
 			TimerReg = CurTime()
-		elseif TTTFGAddons.realProzent > 100 then
-			TTTFGAddons.realProzent = 100
+		elseif percent > 100 then
+			percent = 100
 		end
 	end)
 end)
