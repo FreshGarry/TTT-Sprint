@@ -174,7 +174,7 @@ hook.Add("HUDPaint", "SprintHUD", function()
 		return
 	end -- not ttt
 
-	HUD("STAMINA", xPos, yPos, allignment, Color(0, 0, 255, 255), Color(0, 0, 100, 255), percent, 100)
+	HUD("STAMINA", xPos, yPos, allignment, Color(0, 0, 255, 255), Color(0, 0, 100, 255), TTTSprint.percent, 100)
 end)
 
 -- Change the Speed
@@ -227,7 +227,7 @@ end
 
 -- Sprint activated (sprint if there is stamina)
 local function SprintFunction()
-	if percent > 0 then
+	if TTTSprint.percent > 0 then
 		if not sprinting then
 			SpeedChange(true)
 
@@ -235,7 +235,7 @@ local function SprintFunction()
 			TimerCon = CurTime()
 		end
 
-		percent = percent - (CurTime() - TimerCon) * (math.min(math.max(Consumption, 0.1), 5) * 250)
+		TTTSprint.percent = TTTSprint.percent - (CurTime() - TimerCon) * (math.min(math.max(Consumption, 0.1), 5) * 250)
 		TimerCon = CurTime()
 	else
 		if sprinting then
@@ -249,7 +249,7 @@ end
 -- listen for sprinting
 hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 	-- reset every round
-	percent = 100
+	TTTSprint.percent = 100
 
 	ConVars()
 
@@ -277,19 +277,19 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 				TimerReg = CurTime()
 			end
 
-			percent = percent + (CurTime() - TimerReg) * (math.min(math.max(Regenerate, 0.01), 2) * 250)
+			TTTSprint.percent = TTTSprint.percent + (CurTime() - TimerReg) * (math.min(math.max(Regenerate, 0.01), 2) * 250)
 			TimerReg = CurTime()
 			DoubleTapActivated = false
 		end
 
-		if percent < 0 then -- prevent bugs
-			percent = 0
+		if TTTSprint.percent < 0 then -- prevent bugs
+			TTTSprint.percent = 0
 			SpeedChange(false)
 			sprinting = false
 			DoubleTapActivated = false
 			TimerReg = CurTime()
-		elseif percent > 100 then
-			percent = 100
+		elseif TTTSprint.percent > 100 then
+			TTTSprint.percent = 100
 		end
 	end)
 end)
