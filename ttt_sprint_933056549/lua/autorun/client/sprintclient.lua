@@ -226,20 +226,20 @@ end
 -- Sprint activated (sprint if there is stamina)
 local function SprintFunction()
 	if TTTSprint.percent > 0 then
-		if not sprinting then
+		if not TTTSprint.sprinting then
 			SpeedChange(true)
 
-			sprinting = true
+			TTTSprint.sprinting = true
 			TimerCon = CurTime()
 		end
 
 		TTTSprint.percent = TTTSprint.percent - (CurTime() - TimerCon) * (math.min(math.max(Consumption, 0.1), 5) * 250)
 		TimerCon = CurTime()
 	else
-		if sprinting then
+		if TTTSprint.sprinting then
 			SpeedChange(false)
 
-			sprinting = false
+			TTTSprint.sprinting = false
 		end
 	end
 end
@@ -268,9 +268,9 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 			DoubleTapActivated = false
 			TimerReg = CurTime()
 		else
-			if sprinting then -- not sprinting
+			if TTTSprint.sprinting then -- not sprinting
 				SpeedChange(false)
-				sprinting = false
+				TTTSprint.sprinting = false
 				DoubleTapActivated = false
 				TimerReg = CurTime()
 			end
@@ -283,7 +283,7 @@ hook.Add("TTTPrepareRound", "TTTSprint4TTTPrepareRound", function()
 		if TTTSprint.percent < 0 then -- prevent bugs
 			TTTSprint.percent = 0
 			SpeedChange(false)
-			sprinting = false
+			TTTSprint.sprinting = false
 			DoubleTapActivated = false
 			TimerReg = CurTime()
 		elseif TTTSprint.percent > 100 then
